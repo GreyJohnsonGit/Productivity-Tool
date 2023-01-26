@@ -1,5 +1,10 @@
 {
   "cSpell.words": [
     "onclick"
+  ],
+  "rust-analyzer.linkedProjects": [
+    "client/Cargo.toml",
+    "server/Cargo.toml",
+    "common/Cargo.toml"
   ]
 }

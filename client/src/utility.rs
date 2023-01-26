@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use dioxus::prelude::*;
 use std::rc::Rc;
 use stylist::Style;
@@ -9,3 +11,4 @@ pub fn decompose<'a, T>(state: &'a UseState<T>) -> (&T, Rc<dyn Fn(T)>, &'a UseSt
 pub fn css(css: String) -> String {
   String::from(Style::new(css).expect("Failed to create style").get_class_name())
 }
+

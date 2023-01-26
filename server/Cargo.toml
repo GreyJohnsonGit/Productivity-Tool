@@ -1,0 +1,12 @@
+[package]
+name = "server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+warp = "0.3"
+mongodb = "2.3.0"
+bson = "2.5.0"
+common = { path = "../common" }
+futures = "0.3.25"
