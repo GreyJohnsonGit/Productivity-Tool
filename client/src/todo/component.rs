@@ -1,9 +1,10 @@
 use super::lib::Lib;
-use crate::app_color::AppColor;
-use crate::utility::css;
+use crate::{
+  todo_entry::TodoEntry,
+  utility::css
+};
 use dioxus::prelude::*;
 use common::todo_item::TodoItem;
-use log::info;
 
 #[derive(Props, PartialEq)]
 pub struct TodoProps<'a> {
@@ -12,8 +13,6 @@ pub struct TodoProps<'a> {
 
 #[allow(non_snake_case)]
 pub fn Todo<'a>(cx: Scope<'a, TodoProps<'a>>) -> Element<'a> {
-  info!("Update - Todo");
-
   // State
   let description = use_state(&cx, || String::new());
   let name = use_state(&cx, || String::new());
@@ -29,19 +28,31 @@ pub fn Todo<'a>(cx: Scope<'a, TodoProps<'a>>) -> Element<'a> {
     }
   });
 
+  // Setup
+  let Styles { todo_list } = styles();
+  let a = todo_items.iter();
 
   // Structure
   cx.render(rsx! {
     div {
+      class: "{todo_list}",
       div {
         div {
-          todo_items.iter().map(|todo_item| rsx!(
-            TodoList {
-              todo_item: todo_item.clone(),
+          // Incomplete Tasks
+          todo_items.iter().filter(|i| !i.status).map(|todo_item| rsx!(
+            TodoEntry {
+              todo_item: todo_item,
               todo_items: todo_items
-            }
-          ))}
-        }
+            }))
+          h1 {
+            "Complete"
+          }
+          // Complete Tasks
+          todo_items.iter().filter(|i| i.status).map(|todo_item| rsx!(
+            TodoEntry {
+              todo_item: todo_item,
+              todo_items: todo_items
+            }))}}
       input {
         placeholder: "Name",
         value: "{name}",
@@ -60,67 +71,14 @@ pub fn Todo<'a>(cx: Scope<'a, TodoProps<'a>>) -> Element<'a> {
       }}})
 }
 
-#[derive(Props, PartialEq)]
-pub struct TodoListProps<'a>  {
-  todo_items: &'a UseState<Vec<TodoItem>>,
-  todo_item: TodoItem
-}
-
-#[allow(non_snake_case)]
-pub fn TodoList<'a>(cx: Scope<'a, TodoListProps<'a>>) -> Element<'a> {
-  // State
-  let TodoListProps { todo_items, todo_item } = cx.props;
-  to_owned![todo_items, todo_item];
-  let should_delete = use_state(&cx, || false);
-
-  let todo_items = todo_items.clone();
-  use_effect(cx,
-    (&todo_item, should_delete, &todo_items), 
-    |(todo_item, should_delete, todo_items)| async move {
-      if *should_delete {
-        Lib::remove_item(todo_item.id.as_str(), &todo_items).await;
-        should_delete.modify(|_| false);
-      }
-  });
-
-  // Setup
-  let Styles { list_item } = styles(); 
-  let todo_item_style = list_item.as_str();
-
-  // Structure
-  cx.render(rsx! {
-    div {
-      key: "{todo_item.id}",
-      class: "{todo_item_style}",
-      p { "{todo_item.id}" }
-      p { "{todo_item.title}" }
-      p { "{todo_item.description}" }
-      div {
-        onclick: move |_| { should_delete.modify(|_| true); },
-        "X"
-      }}
-  })
-}
-
 struct Styles {
-  list_item: String,
+  todo_list: String,
 }
 
 fn styles() -> Styles {
-  let strong_light = AppColor::StrongLight.as_str();
-  let weak = AppColor::Weak.as_str();
-  let white_light = AppColor::WhiteLight.as_str();
-  let _ = AppColor::WhiteDark;
-
   Styles {
-    list_item: css(format!("
-      width: 20em;
-      border: 0.1em solid {weak};
-      border-radius: 0.2em;
-      background-color: {strong_light};
-      color: {white_light};
-      padding: 0.1em;
-      margin: 0.1em;
-    ")),
+    todo_list: css(format!("
+      width: 100%;
+    "))
   }
 }

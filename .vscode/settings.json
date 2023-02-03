@@ -1,6 +1,9 @@
 {
   "cSpell.words": [
-    "onclick"
+    "onclick",
+    "onmouseenter",
+    "onmouseleave",
+    "onmouseover"
   ],
   "rust-analyzer.linkedProjects": [
     "client/Cargo.toml",

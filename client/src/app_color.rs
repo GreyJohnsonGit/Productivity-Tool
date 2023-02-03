@@ -2,8 +2,12 @@ pub enum AppColor {
   Weak,
   StrongDark,
   StrongLight,
-  WhiteLight,
-  WhiteDark,
+  PalePrimary,
+  PaleSecondary,
+  Error,
+  Success,
+  SuccessDark,
+  Warning
 }
 
 impl AppColor {
@@ -12,8 +16,12 @@ impl AppColor {
       AppColor::Weak => "#B4B8AB",
       AppColor::StrongDark => "#153243",
       AppColor::StrongLight => "#284b63",
-      AppColor::WhiteLight => "#FFA500",
-      AppColor::WhiteDark => "#B7C9E2" 
+      AppColor::PalePrimary => "#B7C9E2",
+      AppColor::PaleSecondary => "#FFA500",
+      AppColor::Error => "#5e0808",
+      AppColor::Success => "#5ad941",
+      AppColor::SuccessDark => "#237513",
+      AppColor::Warning => "#7a660c",
     }
   }
 

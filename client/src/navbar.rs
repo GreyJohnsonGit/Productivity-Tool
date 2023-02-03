@@ -1,7 +1,6 @@
 use crate::{page::Page, utility::css, button::Button};
 use dioxus::prelude::*;
 use lib::NeverEq;
-use log::info;
 
 #[derive(Props, NeverEq)]
 pub struct NavBarProps<'a> {
@@ -10,8 +9,6 @@ pub struct NavBarProps<'a> {
 
 #[allow(non_snake_case)]
 pub fn NavBar<'a>(cx: Scope<'a, NavBarProps>) -> Element<'a> {
-  info!("Update - NavBar");
-  
   // Setup
   let styles = styles();
   let NavBarProps { page } = cx.props;
@@ -22,11 +19,11 @@ pub fn NavBar<'a>(cx: Scope<'a, NavBarProps>) -> Element<'a> {
       class: "{styles.container}",
       Button {
         onclick: move |_| page.modify(|_| Page::Home),
-        label: "Home".to_string()
+        label: "Home"
       },
       Button {
         onclick: move |_| page.modify(|_| Page::Todo),
-        label: "Todo".to_string()
+        label: "Todo"
       },
     }
   })

@@ -7,6 +7,7 @@ mod app_color;
 mod button;
 mod utility;
 mod backend;
+mod todo_entry;
 
 use app::App;
 use sir::global_css;

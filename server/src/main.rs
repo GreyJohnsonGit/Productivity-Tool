@@ -9,6 +9,7 @@ async fn main() {
   let db = get_db().await;
   let db2 = get_db().await;
   let db3 = get_db().await;
+  let db4 = get_db().await;
   
   let api = warp::path!("todo_items")
     .and(warp::get())
@@ -24,8 +25,16 @@ async fn main() {
     )
     .or(
       warp::path!("todo_items" / String)
-      .and(warp::delete())
+      .and(warp::put())
+      .and(warp::body::content_length_limit(1024 * 16))
+      .and(warp::body::json::<TodoItem>())
       .and(with_db(db3))
+      .and_then(|id, item, db| update_todo_items(id, item, db))
+    )
+    .or(
+      warp::path!("todo_items" / String)
+      .and(warp::delete())
+      .and(with_db(db4))
       .and_then(|id, db| delete_todo_items(id, db))
     );
   
@@ -71,6 +80,11 @@ async fn insert_todo_items(item: TodoItem, db: Database) -> Result<impl warp::Re
   Ok(warp::reply())
 }
 
+async fn update_todo_items(id: String, item: TodoItem, db: Database) -> Result<impl warp::Reply, Infallible> {
+  update_todo_items_db(id, item, db).await;
+  Ok(warp::reply())
+}
+
 async fn delete_todo_items(id: String, db: Database) -> Result<impl warp::Reply, Infallible> {
   delete_todo_items_db(id, db).await;
   Ok(warp::reply())
@@ -95,6 +109,21 @@ async fn insert_todo_items_db(document: TodoItem, db: Database) {
     Ok(_) => {},
     Err(_) => todo!(),
   };
+}
+
+async fn update_todo_items_db(id: String, document: TodoItem, db: Database) {
+  let collection = AppCollections::todo_items(db);
+  collection.update_one(
+    doc! { "id": id }, 
+    doc! {
+      "$set": {
+        "title": document.title,
+        "description": document.description,
+        "status": document.status
+      }
+    },
+    None
+  ).await.unwrap();
 }
 
 async fn delete_todo_items_db(id: String, db: Database) {

@@ -7,17 +7,14 @@ use crate::{
   app_color::AppColor,
   backend::get_todo_items_all
 };
-use common::todo_item::{TodoItem, self};
+use common::todo_item::TodoItem;
 use dioxus::prelude::*;
-use log::info;
 use sir::AppStyle;
 
 #[allow(non_snake_case)]
 pub fn App(cx: Scope) -> Element {
-  info!("Update - App");
-  
   // State
-  let page = use_state(&cx, || Page::Home);
+  let page = use_state(&cx, || Page::Todo);
   let todo_items = use_state(&cx, || Vec::<TodoItem>::new());
 
   cx.use_hook(|| {
@@ -31,7 +28,6 @@ pub fn App(cx: Scope) -> Element {
       }
     });
   });
-  
 
   // Setup
   let styles = styles();
@@ -52,10 +48,10 @@ pub fn App(cx: Scope) -> Element {
         class: "{styles.content_panel}",
         match page.get() {
           Page::Home => Home(cx),
-          Page::Todo => cx.render(rsx!(Todo { todo_items: todo_items }))
-        }}
-    }
-  })
+          Page::Todo => cx.render(rsx!(
+            Todo { 
+              todo_items: todo_items,
+            }))}}}})
 }
 
 struct Styles {
@@ -66,7 +62,7 @@ struct Styles {
 
 fn styles() -> Styles {
   let strong_dark = AppColor::StrongDark.as_str();
-  let dark_white = AppColor::WhiteDark.as_str();
+  let dark_white = AppColor::PalePrimary.as_str();
 
   Styles {
     body: css(format!("
@@ -84,7 +80,10 @@ fn styles() -> Styles {
     ")),
     content_panel: css(format!("
       padding: 2em;
+      flex: 1;
       display: flex;
+      justify-content: center;
+      overflow-y: scroll;
     "))
   }
 }
